@@ -22,9 +22,9 @@ type depature struct {
 	Platform string
 }
 
-func cleanResult(s string) (new string) {
+func cleanResult(s string) (clean string) {
 	s = strings.Replace(s, "\n", "", -1)
-	new = strings.Trim(s, " ")
+	clean = strings.Trim(s, " ")
 	return
 }
 
