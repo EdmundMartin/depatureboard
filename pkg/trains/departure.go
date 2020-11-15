@@ -47,8 +47,8 @@ func (s StationDepartures) Display() {
 	table.SetHeader([]string{"Due", "Destination", "Status", "Platform"})
 	table.SetAutoWrapText(false)
 	table.SetBorder(false)
-	cNormal := []tw.Colors{{}, {tw.Normal, tw.FgCyanColor}, {tw.Bold, tw.FgWhiteColor}, {}}
-	cLate := []tw.Colors{{}, {tw.Normal, tw.FgRedColor}, {tw.Bold, tw.FgWhiteColor}, {}}
+	cNormal := []tw.Colors{{}, {tw.Bold, tw.FgCyanColor}, {tw.Normal, tw.FgWhiteColor}, {}}
+	cLate := []tw.Colors{{}, {tw.Bold, tw.FgRedColor}, {tw.Bold, tw.FgWhiteColor}, {}}
 	whiteForeRedBack := tw.Colors{tw.Bold, tw.FgWhiteColor, tw.BgRedColor}
 	cCancelled := []tw.Colors{whiteForeRedBack, whiteForeRedBack, whiteForeRedBack, whiteForeRedBack}
 	for _, d := range s.Departures {
