@@ -7,6 +7,7 @@ import (
 
 	t "github.com/EdmundMartin/depatureboard/pkg/trains"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 // WebsiteClient client to access the website data
@@ -17,9 +18,13 @@ func NewWebsiteClient() Client {
 	return WebsiteClient{}
 }
 
-func cleanResult(s string) (clean string) {
-	s = strings.Replace(s, "\n", "", -1)
-	clean = strings.Trim(s, " ")
+// CleanString cleans a scraped string to a straight string
+func CleanString(s string) (clean string) {
+	clean = strings.Replace(s, "\n", "", -1)
+	clean = strings.Trim(clean, " ")
+	clean = strings.Replace(clean, "\t", "", -1)
+	clean = html.UnescapeString(clean)
+	clean = strings.Join(strings.Fields(clean), " ")
 	return
 }
 
@@ -42,13 +47,13 @@ func getDepartures(doc *goquery.Document) (t.Departures, error) {
 			selCol := columns.Eq(col)
 			switch col {
 			case 0:
-				dept.Due = cleanResult(selCol.Text())
+				dept.Due = CleanString(selCol.Text())
 			case 1:
-				dept.Dest = cleanResult(selCol.Text())
+				dept.Dest = CleanString(selCol.Text())
 			case 2:
-				dept.Status = cleanResult(selCol.Text())
+				dept.Status = CleanString(selCol.Text())
 			case 3:
-				dept.Platform = cleanResult(selCol.Text())
+				dept.Platform = CleanString(selCol.Text())
 			}
 		}
 		if dept.Dest == "" && dept.Due == "" {
@@ -80,7 +85,10 @@ func (c WebsiteClient) StationInfo(code string, destination string) (*t.StationD
 	}
 
 	stationName := getStation(doc)
-	departures, _ := getDepartures(doc)
+	departures, err := getDepartures(doc)
+	if err != nil {
+		return nil, err
+	}
 
 	sd := t.StationDepartures{
 		Name:       *stationName,

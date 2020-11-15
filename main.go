@@ -15,6 +15,8 @@ func poll(station, destination string, refresh int, departures chan *t.StationDe
 		res, err := c.StationInfo(station, destination)
 		if err == nil {
 			departures <- res
+		} else {
+			log.Fatalf("could not find either station (%v) or destination (%v)", station, destination)
 		}
 		time.Sleep(time.Duration(refresh) * time.Second)
 	}
