@@ -1,12 +1,21 @@
-package trains
+package client
 
 import (
 	"fmt"
 	"net/http"
 	"strings"
 
+	t "github.com/EdmundMartin/depatureboard/pkg/trains"
 	"github.com/PuerkitoBio/goquery"
 )
+
+// WebsiteClient client to access the website data
+type WebsiteClient struct{}
+
+// NewWebsiteClient returns an instance of website client
+func NewWebsiteClient() Client {
+	return WebsiteClient{}
+}
 
 func cleanResult(s string) (clean string) {
 	s = strings.Replace(s, "\n", "", -1)
@@ -19,16 +28,16 @@ func getStation(doc *goquery.Document) *string {
 	return &station
 }
 
-func getDepartures(doc *goquery.Document) (Departures, error) {
+func getDepartures(doc *goquery.Document) (t.Departures, error) {
 	table := doc.Find(`div.results.trains div.tbl-cont tr`)
-	depts := Departures{}
+	depts := t.Departures{}
 	if table.Length() == 0 {
 		return nil, fmt.Errorf("no results found")
 	}
 	for i := range table.Nodes {
 		item := table.Eq(i)
 		columns := item.Find(`td`)
-		dept := Departure{}
+		dept := t.Departure{}
 		for col := range columns.Nodes {
 			selCol := columns.Eq(col)
 			switch col {
@@ -47,8 +56,6 @@ func getDepartures(doc *goquery.Document) (Departures, error) {
 		}
 		depts = append(depts, &dept)
 	}
-	//fmt.Println(depts[2].Dest)
-	//os.Exit(1)
 	return depts, nil
 }
 
@@ -62,7 +69,7 @@ func getResponse(code, destination string) (*http.Response, error) {
 }
 
 // StationInfo gets the station info for a station and destination
-func StationInfo(code string, destination string) (*StationDepartures, error) {
+func (c WebsiteClient) StationInfo(code string, destination string) (*t.StationDepartures, error) {
 	resp, err := getResponse(code, destination)
 	if err != nil {
 		return nil, err
@@ -75,7 +82,7 @@ func StationInfo(code string, destination string) (*StationDepartures, error) {
 	stationName := getStation(doc)
 	departures, _ := getDepartures(doc)
 
-	sd := StationDepartures{
+	sd := t.StationDepartures{
 		Name:       *stationName,
 		Departures: departures,
 	}

@@ -5,12 +5,14 @@ import (
 	"log"
 	"time"
 
+	client "github.com/EdmundMartin/depatureboard/pkg/client"
 	t "github.com/EdmundMartin/depatureboard/pkg/trains"
 )
 
 func poll(station, destination string, refresh int, departures chan *t.StationDepartures) {
+	c := client.NewWebsiteClient()
 	for {
-		res, err := t.StationInfo(station, destination)
+		res, err := c.StationInfo(station, destination)
 		if err == nil {
 			departures <- res
 		}
