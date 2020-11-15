@@ -36,8 +36,7 @@ func main() {
 	go poll(station, destination, refresh, ch)
 	for {
 		res := <-ch
-		deps := res.Departures
-		deps = deps.Limit(maxResults)
-		deps.Display()
+		res.Departures = res.Departures.Limit(maxResults)
+		res.Display()
 	}
 }
